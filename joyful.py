@@ -56,11 +56,13 @@ def find_associations(stream, max_skip=None):
         assoc[current][w] += 1
         assoc[w][current] += 1
 
-  return assoc
+    counts[words[-1]] += 1
 
-def report_associations(assoc, word):
+  return assoc, counts
+
+def report_associations(assoc, counts, word):
   """
-  Reports the associations of a given word in a n associations structure.
+  Reports the associations of a given word in an associations structure.
   Returns a string.
   """
   result = ""
@@ -68,7 +70,7 @@ def report_associations(assoc, word):
   total = sum(others[k] for k in others)
   pct = [ (others[k]/total, k) for k in others ]
   for p, k in sorted(pct, key=lambda e: (1-e[0], e[1])):
-    result += "{:10.3g}% : {}\n".format(p*100, k)
+    result += "{:10.3g}% : {} ({})\n".format(p*100, k, counts[k])
 
   return result
 
@@ -94,12 +96,12 @@ if __name__ == "__main__":
   while '-e' in sys.argv:
     mode = "entropy"
     sys.argv.remove('-e')
-  assoc = find_associations(sys.stdin)
+  assoc, counts = find_associations(sys.stdin, SKIP_SIZE)
   if mode == "entropy":
-    elist = sorted([(entropy(assoc, w), w) for w in assoc])
-    for e, w in elist:
-      print("{:.3g},{}".format(e, w))
+    elist = sorted([(entropy(assoc, w), counts[w], w) for w in assoc])
+    for e, c, w in elist:
+      print("{:.3g},{},{}".format(e, c, w))
   else: # default: associations
     for k in sorted(list(assoc.keys())):
-      print(k + ":")
-      print(report_associations(assoc, k))
+      print("{} ({}):".format(k, counts[k]))
+      print(report_associations(assoc, counts, k))
