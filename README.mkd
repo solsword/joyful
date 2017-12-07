@@ -1,0 +1,3 @@
+# Joyful
+
+Skip-gram analysis of words.
