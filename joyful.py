@@ -83,7 +83,7 @@ if __name__ == "__main__":
   if mode == "entropy":
     elist = sorted([(entropy(assoc, w), w) for w in assoc])
     for e, w in elist:
-      print("{:.3g}: {}".format(e, w))
+      print("{:.3g},{}".format(e, w))
   else: # default: associations
     for k in sorted(list(assoc.keys())):
       print(k + ":")
